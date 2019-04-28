@@ -15,10 +15,9 @@ using namespace std::chrono;
 
 void run_benchmark(unsigned int tree_depth) {
     unsigned long long tree_size = 1 << tree_depth;
-    //unsigned int log_num_labels = 3 * tree_depth / 4;
-    unsigned int log_num_labels = tree_depth - 4;
+    unsigned int subtree_depth = 4;
+    unsigned int log_num_labels = tree_depth - subtree_depth;
     unsigned long long num_labels = 1 << log_num_labels;
-    unsigned int subtree_depth = tree_depth - log_num_labels;
     unsigned int threshold = tree_depth;
 
     unsigned long long depths[num_labels];
