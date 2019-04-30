@@ -18,7 +18,7 @@ pair<MapLabelToLabelVector, vector<unsigned long long> > create_subtree_partitio
         unsigned int tree_depth, unsigned int subtree_depth);
 
 vector< pair<unsigned long long, unsigned long long> > get_all_edges(
-        unsigned long long *labels, unsigned long long *depths, unsigned int threshold,
+        unsigned long long *labels, unsigned int threshold,
         unsigned int tree_depth, unsigned int subtree_depth,
         vector<unsigned long long> subtree_labels,
         MapLabelToLabelVector subtree_label_to_label_index_list);

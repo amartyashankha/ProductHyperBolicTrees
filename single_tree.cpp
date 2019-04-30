@@ -8,6 +8,8 @@
 #include<map>
 #include <chrono>
 
+#include <benchmark/benchmark.h>
+
 #include "single_tree_helper.h"
 
 using namespace std;
@@ -47,6 +49,8 @@ void run_benchmark(unsigned int tree_depth) {
     printf("%lf nanoseconds per edge\n", 1.0 * elapsed_time / edges.size());
 
 }
+
+BENCHMARK(run_benchmark);
 
 
 int main(int argc, char *argv[]) {

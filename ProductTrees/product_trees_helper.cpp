@@ -1,5 +1,6 @@
 #include "product_trees_helper.h"
 
+#define ROOT_SUBTREE_LABEL 1
 
 unsigned int label_distance(unsigned long long first_label, unsigned long long second_label) {
     unsigned int dist = 0;
@@ -48,18 +49,42 @@ pair<MapLabelToLabelVector, vector<unsigned long long> > create_subtree_partitio
 
     for (unsigned long long i = 0; i < num_labels; ++i) {
         label = labels[i];
-        depth = depths[i];
+        depth = floor(log2(label));
         extra_depth = depth % subtree_depth;
         subtree_label_to_label_index_list[label >> extra_depth].push_back(label);
     }
+    //for (auto& t : subtree_label_to_label_index_list) {
+        //cout << t.first << "\t";
+        //for (const auto i: t.second)
+            //cout << i << " ";
+        //cout << endl;
+    //}
 
     printf("Found %ld subtrees.\n", subtree_labels.size());
     return pair<MapLabelToLabelVector, vector<unsigned long long> >(subtree_label_to_label_index_list, subtree_labels);
 }
 
+void add_descendant_subtree_labels_to_vector(
+        unsigned long long source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        unsigned int remaining_distance, vector<unsigned long long> &subtree_labels_vector) {
+    unsigned int current_depth = floor(log2(source_subtree_label));
+    unsigned long long partial_label_max = 1;
+    unsigned long long current_base_label = source_subtree_label;
+    while (current_depth < tree_depth && remaining_distance >= 0) {
+        for (unsigned long long partial_label = 0; partial_label < partial_label_max; ++partial_label) {
+            unsigned long long descendant_subtree_label = current_base_label + partial_label;
+            subtree_labels_vector.push_back(descendant_subtree_label);
+        }
+        current_base_label = current_base_label << subtree_depth;
+        current_depth += subtree_depth;
+        partial_label_max = partial_label_max << subtree_depth;
+        remaining_distance -= subtree_depth;
+    }
+}
+
 void get_nearby_subtrees(
-        unsigned long long subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
-        unsigned int remaining_distance, unordered_set<unsigned long long> &visited_subtree_labels) {
+        unsigned long long source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        unsigned int remaining_distance, vector<unsigned long long> &visited_subtree_labels) {
     unsigned int subtree_label_depth = floor(log2(subtree_label));
 
     /* TODO: Remove this for optimization later. <16-04-19, shankha> */
@@ -78,35 +103,34 @@ void get_nearby_subtrees(
         //assert(0);
     //}
 
-    if (visited_subtree_labels.find(subtree_label) != visited_subtree_labels.end())
-        return;
+    unsigned long long current_root_subtree_label = source_subtree_label;
+    unsigned long long old_root_subtree_label;
+    unsigned long long neighboring_subtree_label;
+    unsigned long long subtree_valence = 1 << subtree_depth;
 
-    visited_subtree_labels.insert(subtree_label);
-    if (remaining_distance < subtree_depth)
-        return;
-    else {
-
-        /* TODO: This is not quite correct? <16-04-19, shankha> */
-        remaining_distance -= subtree_depth;
-        if (subtree_label_depth + subtree_depth <= tree_depth - subtree_depth) {
-            unsigned long long child_subtree_label_base = subtree_label << subtree_depth;
-            unsigned long long max_label_extension = 1 << subtree_depth;
-            for (unsigned long long label_extension = 0; label_extension < max_label_extension; ++label_extension) {
-                unsigned long long child_subtree_label = child_subtree_label_base + label_extension;
-                get_nearby_subtrees(child_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+    add_descendant_subtree_labels_to_vector(source_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+    while (remaining_distance >= subtree_depth) {
+        /* TODO: generate all subtrees below current one <30-04-19, shankha> */
+        if (current_root_subtree_label != ROOT_SUBTREE_LABEL) {
+            old_root_subtree_label = current_root_subtree_label;
+            current_root_subtree_label = current_root_subtree_label >> subtree_depth;
+            remaining_distance -= 2 * subtree_depth;
+            for (unsigned long long partial_label = 0; partial_label < subtree_valence; ++partial_label) {
+                neighboring_subtree_label = (current_root_subtree_label << subtree_depth) + partial_label;
+                add_descendant_subtree_labels_to_vector(
+                        neighboring_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
             }
+            remaining_distance += subtree_depth;
         }
-
-        if (subtree_label_depth >= subtree_depth) {
-            unsigned long long parent_subtree_label = subtree_label >> subtree_depth;
-            get_nearby_subtrees(parent_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
-        }
+        else
+            break;
     }
+
 }
 
 
 vector< pair<unsigned long long, unsigned long long> > get_all_edges(
-        unsigned long long *labels, unsigned long long *depths, unsigned int threshold,
+        unsigned long long *labels, unsigned int threshold,
         unsigned int tree_depth, unsigned int subtree_depth,
         vector<unsigned long long> subtree_labels,
         MapLabelToLabelVector subtree_label_to_label_index_list) {
@@ -122,29 +146,38 @@ vector< pair<unsigned long long, unsigned long long> > get_all_edges(
 
     for (unsigned long long i = 0; i < num_subtrees; ++i) {
         unsigned long long first_subtree_label = subtree_labels[i];
+        first_subtree_member_labels = subtree_label_to_label_index_list[first_subtree_label];
         visited_subtree_labels.clear();
-        get_nearby_subtrees(first_subtree_label, tree_depth, subtree_depth, threshold, visited_subtree_labels);
+        unsigned int remaining_distance = threshold;
+        get_nearby_subtrees(first_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
         for (unsigned long long second_subtree_label : visited_subtree_labels) {
             if (second_subtree_label >= first_subtree_label) {
 
-        //for (unsigned long long j = i; j < num_subtrees; ++j) {
+        //for (unsigned long long j = i + 1; j < num_subtrees; ++j) {
             //unsigned long long second_subtree_label = subtree_labels[j];
             //unsigned int dist = label_distance(first_subtree_label, second_subtree_label);
 
             //if (dist <= threshold) {
-                first_subtree_member_labels = subtree_label_to_label_index_list[first_subtree_label];
                 second_subtree_member_labels = subtree_label_to_label_index_list[second_subtree_label];
                 degree += first_subtree_member_labels.size() * second_subtree_member_labels.size();
 
                 for (unsigned int k = 0; k < first_subtree_member_labels.size(); ++k) {
                     unsigned long long first_endpoint_label = first_subtree_member_labels[k];
-                    for (unsigned int l = 0; l < first_subtree_member_labels.size(); ++l) {
-                        unsigned long long second_endpoint_label = second_subtree_member_labels[k];
-                        if(label_distance(first_endpoint_label, second_endpoint_label) <= threshold)
+                    for (unsigned int l = 0; l < second_subtree_member_labels.size(); ++l) {
+                        unsigned long long second_endpoint_label = second_subtree_member_labels[l];
+                        if (label_distance(first_endpoint_label, second_endpoint_label) <= threshold)
                             edges.push_back(pair<unsigned long long, unsigned long long>(first_endpoint_label, second_endpoint_label));
                     }
                 }
-                // print(dist, first_subtree_member_labels.size(), second_subtree_member_labels.size())
+            }
+        }
+
+        for (unsigned int k = 0; k < first_subtree_member_labels.size(); ++k) {
+            unsigned long long first_endpoint_label = first_subtree_member_labels[k];
+            for (unsigned int l = k + 1; l < first_subtree_member_labels.size(); ++l) {
+                unsigned long long second_endpoint_label = first_subtree_member_labels[l];
+                if (label_distance(first_endpoint_label, second_endpoint_label) <= threshold)
+                    edges.push_back(pair<unsigned long long, unsigned long long>(first_endpoint_label, second_endpoint_label));
             }
         }
     }
