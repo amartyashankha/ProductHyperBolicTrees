@@ -15,6 +15,7 @@ using namespace std;
 
 typedef unsigned int LONG_UINT;
 typedef unordered_map<LONG_UINT, unsigned int> UNORDERED_MAP;
+typedef pair<LONG_UINT, LONG_UINT> LABEL;
 
 tuple<vector<LONG_UINT>, UNORDERED_MAP> get_subtree_labels(
         LONG_UINT *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth);
