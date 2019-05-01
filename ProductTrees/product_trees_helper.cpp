@@ -2,6 +2,23 @@
 
 #define ROOT_SUBTREE_LABEL 1
 
+
+LABEL operator %(const LABEL &p, const unsigned int &a) {
+    return make_pair(p.first % a, p.second % a);
+}
+
+LABEL operator >>(const LABEL &p, const LABEL &a) {
+    return make_pair(p.first >> a.first, p.second >> a.second);
+}
+
+LABEL floor(const LABEL &p) {
+    return make_pair(floor(p.first), floor(p.second));
+}
+
+LABEL log2(const LABEL &p) {
+    return make_pair(log2(p.first), log2(p.second));
+}
+
 inline unsigned int label_distance(LONG_UINT first_label, LONG_UINT second_label) {
     unsigned int dist = 0;
     LONG_UINT l1, l2;
@@ -74,8 +91,7 @@ tuple< LABEL *, unsigned int * > create_subtree_partitions(
         subtree_member_list_sizes[i] = 0;
     for (LONG_UINT i = 0; i < num_labels; ++i) {
         label = labels[i];
-        depth.first = floor(log2(label.first));
-        depth.second = floor(log2(label.second));
+        depth = floor(log2(label));
         extra_depth = depth % subtree_depth;
         subtree_label = label >> extra_depth;
         ++subtree_member_list_sizes[map_subtree_label_to_index[subtree_label]];
@@ -192,7 +208,7 @@ vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
         for (LONG_UINT second_subtree_label : visited_subtree_labels) {
             ++subtree_neighbors_accumulator[i];
             if (second_subtree_label > first_subtree_label) {
-                unsigned int second_subtree_index = map_subtree_label_to_index[second_subtree_label];
+                unsigned int second_subtree_index;// = map_subtree_label_to_index[second_subtree_label];
                 second_subtree_member_labels = &subtree_label_to_label_index_list[subtree_member_list_indices[second_subtree_index]];
                 num_second_subtree_member_labels = subtree_member_list_indices[second_subtree_index + 1];
                 num_second_subtree_member_labels -= subtree_member_list_indices[second_subtree_index];
