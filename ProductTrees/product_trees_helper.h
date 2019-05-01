@@ -29,13 +29,21 @@ typedef unsigned int LONG_UINT;
 typedef pair<LONG_UINT, LONG_UINT> LABEL;
 typedef unordered_map<LABEL, unsigned int, pair_hash> UNORDERED_MAP;
 
+LABEL operator %(const LABEL &p, const unsigned int &a) {
+    return make_pair(p.first % a, p.second % a);
+}
+
+LABEL operator >>(const LABEL &p, const LABEL &a) {
+    return make_pair(p.first >> a.first, p.second >> a.second);
+}
+
 tuple<vector<LABEL>, UNORDERED_MAP> get_subtree_labels(
         LABEL *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth);
 
 tuple< LABEL *, unsigned int * > create_subtree_partitions(
-        LONG_UINT *labels, LONG_UINT num_labels,
+        LABEL *labels, LONG_UINT num_labels,
         unsigned int tree_depth, unsigned int subtree_depth,
-        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index);
+        vector<LABEL> subtree_labels, UNORDERED_MAP map_subtree_label_to_index);
 
 vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
         LONG_UINT *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,

@@ -57,14 +57,14 @@ tuple<vector<LABEL>, UNORDERED_MAP> get_subtree_labels(
 }
 
 
-tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
-        LONG_UINT *labels, LONG_UINT num_labels,
+tuple< LABEL *, unsigned int * > create_subtree_partitions(
+        LABEL *labels, LONG_UINT num_labels,
         unsigned int tree_depth, unsigned int subtree_depth,
-        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index) {
-    unsigned int extra_depth, subtree_index;
-    LONG_UINT subtree_label, depth;
+        vector<LABEL> subtree_labels, UNORDERED_MAP map_subtree_label_to_index) {
+    unsigned int subtree_index;
+    LABEL subtree_label, label, depth, extra_depth;
 
-    LONG_UINT *subtree_label_to_label_index_list = (LONG_UINT *)malloc(num_labels * sizeof(LONG_UINT));
+    LABEL *subtree_label_to_label_index_list = (LABEL *)malloc(num_labels * sizeof(LABEL));
     unsigned int num_subtrees = subtree_labels.size();
     unsigned int subtree_member_list_sizes[num_subtrees];
     unsigned int subtree_member_list_pointers[num_subtrees + 1];
@@ -73,10 +73,11 @@ tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
     for (unsigned int i = 0; i < num_subtrees; ++i)
         subtree_member_list_sizes[i] = 0;
     for (LONG_UINT i = 0; i < num_labels; ++i) {
-        subtree_label = labels[i];
-        depth = floor(log2(subtree_label));
+        label = labels[i];
+        depth.first = floor(log2(label.first));
+        depth.second = floor(log2(label.second));
         extra_depth = depth % subtree_depth;
-        subtree_label = subtree_label >> extra_depth;
+        subtree_label = label >> extra_depth;
         ++subtree_member_list_sizes[map_subtree_label_to_index[subtree_label]];
     }
 
@@ -89,7 +90,7 @@ tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
     }
 
     for (LONG_UINT i = 0; i < num_labels; ++i) {
-        LONG_UINT label = labels[i];
+        label = labels[i];
         depth = floor(log2(label));
         extra_depth = depth % subtree_depth;
         subtree_label = label >> extra_depth;
