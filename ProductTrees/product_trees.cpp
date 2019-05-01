@@ -21,14 +21,16 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
     LONG_UINT num_labels = 1 << log_num_labels;
     unsigned int threshold = num_trees * tree_depth;
 
-    LONG_UINT labels[num_labels];
+    LABEL labels[num_labels];
 
     const unsigned int seed = 0;
     mt19937_64 mersenne_twister(seed);
 
     for (LONG_UINT i = 0; i < num_labels; ++i) {
         LONG_UINT l = 1 + (LONG_UINT)(mersenne_twister() % (tree_size - 1));
-        labels[i] = l;
+        labels[i].first = l;
+        l = 1 + (LONG_UINT)(mersenne_twister() % (tree_size - 1));
+        labels[i].second = l;
     }
 
     for (unsigned int i = 0; i < num_labels; ++i) {
@@ -38,9 +40,9 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
     printf("Start recording time.\n\n");
     auto start = high_resolution_clock::now();
 
-    vector<LONG_UINT> subtree_labels;
+    vector<LABEL> subtree_labels;
     UNORDERED_MAP map_subtree_label_to_index;
-    LONG_UINT *subtree_label_to_label_index_list;
+    LABEL *subtree_label_to_label_index_list;
     unsigned int *subtree_member_list_indices;
 
     tie(subtree_labels, map_subtree_label_to_index) = get_subtree_labels(labels, num_labels, tree_depth, subtree_depth);
@@ -48,23 +50,23 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
             labels, num_labels, tree_depth, subtree_depth, subtree_labels, map_subtree_label_to_index);
 
 
-    vector< pair<LONG_UINT, LONG_UINT> > edges = get_all_edges(
-            labels, threshold, tree_depth, subtree_depth,
-            subtree_labels, map_subtree_label_to_index,
-            subtree_label_to_label_index_list, subtree_member_list_indices);
+    //vector< pair<LONG_UINT, LONG_UINT> > edges = get_all_edges(
+            //labels, threshold, tree_depth, subtree_depth,
+            //subtree_labels, map_subtree_label_to_index,
+            //subtree_label_to_label_index_list, subtree_member_list_indices);
 
-    auto stop = high_resolution_clock::now();
-    int64_t elapsed_time = duration_cast<nanoseconds>(stop - start).count();
-    printf("Elapsed Time: %lf miliseconds\n", elapsed_time / 1e6);
-    printf("Found %ld edges amongst %d vertices.\n", edges.size(), num_labels);
-    printf("%lf nanoseconds per edge\n", 1.0 * elapsed_time / edges.size());
+    //auto stop = high_resolution_clock::now();
+    //int64_t elapsed_time = duration_cast<nanoseconds>(stop - start).count();
+    //printf("Elapsed Time: %lf miliseconds\n", elapsed_time / 1e6);
+    //printf("Found %ld edges amongst %d vertices.\n", edges.size(), num_labels);
+    //printf("%lf nanoseconds per edge\n", 1.0 * elapsed_time / edges.size());
 
-    free(subtree_label_to_label_index_list);
-    free(subtree_member_list_indices);
+    //free(subtree_label_to_label_index_list);
+    //free(subtree_member_list_indices);
 
-    for (pair<LONG_UINT, LONG_UINT> edge: edges) {
+    //for (pair<LONG_UINT, LONG_UINT> edge: edges) {
         //printf("%lld\t%lld\n", edge.first, edge.second);
-    }
+    //}
 
 }
 

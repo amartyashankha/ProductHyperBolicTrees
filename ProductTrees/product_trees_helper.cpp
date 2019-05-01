@@ -26,22 +26,31 @@ inline unsigned int label_distance(LONG_UINT first_label, LONG_UINT second_label
 }
 
 
-tuple<vector<LONG_UINT>, UNORDERED_MAP> get_subtree_labels(
-        LONG_UINT *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth) {
+tuple<vector<LABEL>, UNORDERED_MAP> get_subtree_labels(
+        LABEL *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth) {
     UNORDERED_MAP map_subtree_label_to_index;
-    vector<LONG_UINT> subtree_labels;
-    LONG_UINT subtree_label;
+    vector<LONG_UINT> subtree_single_labels;
+    vector<LABEL> subtree_labels;
+    LABEL subtree_label;
+    LONG_UINT subtree_single_label;
 
     unsigned int current_depth = 0;
     while (current_depth < tree_depth) {
-        LONG_UINT current_base_label = (1 << current_depth);
-        for (LONG_UINT partial_label = 0; partial_label < current_base_label; ++partial_label) {
-            subtree_label = partial_label + current_base_label;
-            subtree_labels.push_back(subtree_label);
-            map_subtree_label_to_index[subtree_label] = subtree_labels.size() - 1;
+        LONG_UINT current_base_single_label = (1 << current_depth);
+        for (LONG_UINT partial_single_label = 0; partial_single_label < current_base_single_label; ++partial_single_label) {
+            subtree_single_label = partial_single_label + current_base_single_label;
+            subtree_single_labels.push_back(subtree_single_label);
         }
         current_depth += subtree_depth;
     }
+
+    subtree_labels.reserve(subtree_single_labels.size() * subtree_single_labels.size());
+    for (auto subtree_first_label : subtree_single_labels)
+        for (auto subtree_second_label : subtree_single_labels) {
+            subtree_label = make_pair(subtree_first_label, subtree_first_label);
+            subtree_labels.push_back(subtree_label);
+            map_subtree_label_to_index[subtree_label] = subtree_labels.size() - 1;
+        }
     printf("Found %ld subtrees.\n", subtree_labels.size());
 
     return make_tuple(subtree_labels, map_subtree_label_to_index);
