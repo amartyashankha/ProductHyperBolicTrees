@@ -49,7 +49,7 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
 
 
     vector< pair<LONG_UINT, LONG_UINT> > edges = get_all_edges(
-            labels, threshold, tree_depth, subtree_depth,
+            labels, num_labels, threshold, tree_depth, subtree_depth,
             subtree_labels, map_subtree_label_to_index,
             subtree_label_to_label_index_list, subtree_member_list_indices);
 

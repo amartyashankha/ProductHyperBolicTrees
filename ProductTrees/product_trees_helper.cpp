@@ -184,11 +184,11 @@ void get_nearby_subtrees(
 
 
 vector< pair<LABEL, LABEL> > get_all_edges(
-        LABEL *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
+        LABEL *labels, LONG_UINT num_labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
         vector<LABEL> subtree_labels, UNORDERED_MAP map_subtree_label_to_index,
         LABEL *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices) {
     vector< pair<LABEL, LABEL> > edges;
-    edges.reserve(100 * (1 << tree_depth));
+    edges.reserve(100 * num_labels);
 
     LONG_UINT num_subtrees = subtree_labels.size();
     LONG_UINT *first_subtree_member_labels, *second_subtree_member_labels;
