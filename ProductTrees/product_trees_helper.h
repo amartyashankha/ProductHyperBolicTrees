@@ -11,19 +11,20 @@
 
 using namespace std;
 
-typedef unordered_map< unsigned long long, vector<unsigned long long> > MapLabelToLabelVector;
+typedef unsigned int LONG_UINT;
+typedef unordered_map UNORDERED_MAP;
 
-tuple< vector<unsigned long long>, unordered_map<unsigned long long, unsigned int> > get_subtree_labels(
-        unsigned long long *labels, unsigned long long num_labels, unsigned int tree_depth, unsigned int subtree_depth);
+tuple< vector<LONG_UINT>, unordered_map<LONG_UINT, unsigned int> > get_subtree_labels(
+        LONG_UINT *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth);
 
-tuple< unsigned long long *, unsigned int * > create_subtree_partitions(
-        unsigned long long *labels, unsigned long long num_labels,
+tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
+        LONG_UINT *labels, LONG_UINT num_labels,
         unsigned int tree_depth, unsigned int subtree_depth,
-        vector<unsigned long long> subtree_labels, unordered_map<unsigned long long, unsigned int> map_subtree_label_to_index);
+        vector<LONG_UINT> subtree_labels, unordered_map<LONG_UINT, unsigned int> map_subtree_label_to_index);
 
-vector< pair<unsigned long long, unsigned long long> > get_all_edges(
-        unsigned long long *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
-        vector<unsigned long long> subtree_labels, unordered_map<unsigned long long, unsigned int> map_subtree_label_to_index,
-        unsigned long long *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices);
+vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
+        LONG_UINT *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
+        vector<LONG_UINT> subtree_labels, unordered_map<LONG_UINT, unsigned int> map_subtree_label_to_index,
+        LONG_UINT *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices);
 
 #endif
