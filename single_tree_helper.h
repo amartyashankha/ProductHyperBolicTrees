@@ -1,26 +1,32 @@
-#ifndef SINGLE_TREE_HELPER_H
-#define SINGLE_TREE_HELPER_H
+#ifndef PRODUCT_TREES_HELPER_H
+#define PRODUCT_TREES_HELPER_H
 
 #include<iostream>
 #include<vector>
+#include<numeric>
 #include<unordered_map>
-#include<unordered_set>
 
 #include<cassert>
 #include<cmath>
 
+#include "absl/container/flat_hash_map.h"
+
 using namespace std;
 
-typedef unordered_map< unsigned long long, vector<unsigned long long> > MapLabelToLabelVector;
+typedef unsigned int LONG_UINT;
+typedef unordered_map<LONG_UINT, unsigned int> UNORDERED_MAP;
 
-pair<MapLabelToLabelVector, vector<unsigned long long> > create_subtree_partitions(
-        unsigned long long *labels, unsigned long long *depths, unsigned long long num_labels,
-        unsigned int tree_depth, unsigned int subtree_depth);
+tuple<vector<LONG_UINT>, UNORDERED_MAP> get_subtree_labels(
+        LONG_UINT *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth);
 
-vector< pair<unsigned long long, unsigned long long> > get_all_edges(
-        unsigned long long *labels, unsigned long long *depths, unsigned int threshold,
+tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
+        LONG_UINT *labels, LONG_UINT num_labels,
         unsigned int tree_depth, unsigned int subtree_depth,
-        vector<unsigned long long> subtree_labels,
-        MapLabelToLabelVector subtree_label_to_label_index_list);
+        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index);
+
+vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
+        LONG_UINT *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
+        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index,
+        LONG_UINT *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices);
 
 #endif
