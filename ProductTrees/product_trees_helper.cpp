@@ -26,9 +26,9 @@ inline unsigned int label_distance(LONG_UINT first_label, LONG_UINT second_label
 }
 
 
-tuple< vector<LONG_UINT>, UNORDERED_MAP<LONG_UINT, unsigned int> > get_subtree_labels(
+tuple<vector<LONG_UINT>, UNORDERED_MAP> get_subtree_labels(
         LONG_UINT *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth) {
-    UNORDERED_MAP<LONG_UINT, unsigned int> map_subtree_label_to_index;
+    UNORDERED_MAP map_subtree_label_to_index;
     vector<LONG_UINT> subtree_labels;
     LONG_UINT subtree_label;
 
@@ -51,7 +51,7 @@ tuple< vector<LONG_UINT>, UNORDERED_MAP<LONG_UINT, unsigned int> > get_subtree_l
 tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
         LONG_UINT *labels, LONG_UINT num_labels,
         unsigned int tree_depth, unsigned int subtree_depth,
-        vector<LONG_UINT> subtree_labels, UNORDERED_MAP<LONG_UINT, unsigned int> map_subtree_label_to_index) {
+        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index) {
     unsigned int extra_depth, subtree_index;
     LONG_UINT subtree_label, depth;
 
@@ -159,7 +159,7 @@ void get_nearby_subtrees(
 
 vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
         LONG_UINT *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
-        vector<LONG_UINT> subtree_labels, UNORDERED_MAP<LONG_UINT, unsigned int> map_subtree_label_to_index,
+        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index,
         LONG_UINT *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices) {
     vector< pair<LONG_UINT, LONG_UINT> > edges;
     edges.reserve(100 * (1 << tree_depth));
