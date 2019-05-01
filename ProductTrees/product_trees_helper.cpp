@@ -99,7 +99,7 @@ tuple< LONG_UINT *, unsigned int * > create_subtree_partitions(
     //}
     //cout << endl;
 
-    return tuple< LONG_UINT *, unsigned int * >(subtree_label_to_label_index_list, subtree_member_list_indices);
+    return make_tuple(subtree_label_to_label_index_list, subtree_member_list_indices);
 }
 
 void add_descendant_subtree_labels_to_vector(
