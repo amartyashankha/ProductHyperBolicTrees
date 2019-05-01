@@ -39,7 +39,7 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
     auto start = high_resolution_clock::now();
 
     vector<LONG_UINT> subtree_labels;
-    unordered_map<LONG_UINT, unsigned int> map_subtree_label_to_index;
+    UNORDERED_MAP map_subtree_label_to_index;
     LONG_UINT *subtree_label_to_label_index_list;
     unsigned int *subtree_member_list_indices;
 
