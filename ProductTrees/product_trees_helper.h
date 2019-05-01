@@ -37,9 +37,9 @@ tuple< LABEL *, unsigned int * > create_subtree_partitions(
         unsigned int tree_depth, unsigned int subtree_depth,
         vector<LABEL> subtree_labels, UNORDERED_MAP map_subtree_label_to_index);
 
-vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
-        LONG_UINT *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
-        vector<LONG_UINT> subtree_labels, UNORDERED_MAP map_subtree_label_to_index,
-        LONG_UINT *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices);
+vector< pair<LABEL, LABEL> > get_all_edges(
+        LABEL *labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
+        vector<LABEL> subtree_labels, UNORDERED_MAP map_subtree_label_to_index,
+        LABEL *subtree_label_to_label_index_list, unsigned int *subtree_member_list_indices);
 
 #endif

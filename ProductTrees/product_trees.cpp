@@ -50,10 +50,10 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
             labels, num_labels, tree_depth, subtree_depth, subtree_labels, map_subtree_label_to_index);
 
 
-    //vector< pair<LONG_UINT, LONG_UINT> > edges = get_all_edges(
-            //labels, threshold, tree_depth, subtree_depth,
-            //subtree_labels, map_subtree_label_to_index,
-            //subtree_label_to_label_index_list, subtree_member_list_indices);
+    vector< pair<LABEL, LABEL> > edges = get_all_edges(
+            labels, threshold, tree_depth, subtree_depth,
+            subtree_labels, map_subtree_label_to_index,
+            subtree_label_to_label_index_list, subtree_member_list_indices);
 
     //auto stop = high_resolution_clock::now();
     //int64_t elapsed_time = duration_cast<nanoseconds>(stop - start).count();
