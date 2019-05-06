@@ -20,11 +20,6 @@ LABEL log2(const LABEL &p) {
 }
 
 
-inline unsigned int label_distance(LABEL first_label, LABEL second_label) {
-    return single_label_distance(first_label.first, second_label.first) + single_label_distance(first_label.second, second_label.second);
-}
-
-
 inline unsigned int single_label_distance(LONG_UINT first_label, LONG_UINT second_label) {
     unsigned int dist = 0;
     LONG_UINT l1, l2;
@@ -46,6 +41,11 @@ inline unsigned int single_label_distance(LONG_UINT first_label, LONG_UINT secon
     dist = 2 * (31 ^ __builtin_clz(((l2 ^ l1) << 1) + 1)) + height_delta;
 
     return dist;
+}
+
+
+inline unsigned int label_distance(LABEL first_label, LABEL second_label) {
+    return single_label_distance(first_label.first, second_label.first) + single_label_distance(first_label.second, second_label.second);
 }
 
 
