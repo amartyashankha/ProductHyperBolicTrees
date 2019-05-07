@@ -10,6 +10,8 @@
 #include<cassert>
 #include<cmath>
 
+#include <sparsehash/dense_hash_set>
+
 using namespace std;
 
 struct pair_hash {

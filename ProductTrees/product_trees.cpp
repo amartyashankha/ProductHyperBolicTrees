@@ -19,7 +19,7 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
 
     LONG_UINT tree_size = 1 << tree_depth;
     LONG_UINT num_labels = 1 << log_num_labels;
-    unsigned int threshold = num_trees * tree_depth;
+    unsigned int threshold = num_trees * (tree_depth - 0);
 
     LABEL labels[num_labels];
 
