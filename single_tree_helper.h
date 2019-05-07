@@ -5,15 +5,20 @@
 #include<vector>
 #include<numeric>
 #include<unordered_map>
+#include<unordered_set>
 
 #include<cassert>
 #include<cmath>
 
-#include "absl/container/flat_hash_map.h"
+#include <sparsehash/sparse_hash_map>
+#include <sparsehash/dense_hash_map>
+#include <sparsehash/sparse_hash_set>
+#include <sparsehash/dense_hash_set>
 
 using namespace std;
 
 typedef unsigned int LONG_UINT;
+//typedef google::dense_hash_map<LONG_UINT, unsigned int> UNORDERED_MAP;
 typedef unordered_map<LONG_UINT, unsigned int> UNORDERED_MAP;
 
 tuple<vector<LONG_UINT>, UNORDERED_MAP> get_subtree_labels(

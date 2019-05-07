@@ -156,6 +156,37 @@ void get_nearby_subtrees(
 
 }
 
+void get_nearby_subtrees_BFS(
+        LONG_UINT source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        int remaining_distance, unordered_set<LONG_UINT> &visited_subtree_labels) {
+    unsigned int subtree_label_depth = floor(log2(source_subtree_label));
+    unsigned int recursive_remaining_distance;
+
+    if (visited_subtree_labels.find(source_subtree_label) != visited_subtree_labels.end())
+        return;
+
+    visited_subtree_labels.insert(source_subtree_label);
+    if (remaining_distance < subtree_depth)
+        return;
+    else {
+        /* TODO: This is not quite correct? <16-04-19, shankha> */
+        remaining_distance -= subtree_depth;
+        if (subtree_label_depth + subtree_depth <= tree_depth - subtree_depth) {
+            unsigned long long child_subtree_label_base = source_subtree_label << subtree_depth;
+            unsigned long long max_label_extension = 1 << subtree_depth;
+            for (unsigned long long label_extension = 0; label_extension < max_label_extension; ++label_extension) {
+                unsigned long long child_subtree_label = child_subtree_label_base + label_extension;
+                get_nearby_subtrees_BFS(child_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+            }
+        }
+
+        if (subtree_label_depth >= subtree_depth) {
+            unsigned long long parent_subtree_label = source_subtree_label >> subtree_depth;
+            get_nearby_subtrees_BFS(parent_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+        }
+    }
+}
+
 
 vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
         LONG_UINT *labels, LONG_UINT num_labels, unsigned int threshold, unsigned int tree_depth, unsigned int subtree_depth,
@@ -167,7 +198,9 @@ vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
     LONG_UINT num_subtrees = subtree_labels.size();
     LONG_UINT *first_subtree_member_labels, *second_subtree_member_labels;
     unsigned int num_first_subtree_member_labels, num_second_subtree_member_labels;
-    vector<LONG_UINT> visited_subtree_labels;
+    //vector<LONG_UINT> visited_subtree_labels;
+    unordered_set<LONG_UINT> visited_subtree_labels;
+    //visited_subtree_labels.set_empty_key(0);
     vector<unsigned int> subtree_neighbors_accumulator;
 
     for (LONG_UINT i = 0; i < num_subtrees; ++i) {
@@ -178,7 +211,7 @@ vector< pair<LONG_UINT, LONG_UINT> > get_all_edges(
 
         visited_subtree_labels.clear();
         int remaining_distance = threshold + 0 * subtree_depth;
-        get_nearby_subtrees(first_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+        get_nearby_subtrees_BFS(first_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
         for (LONG_UINT second_subtree_label : visited_subtree_labels) {
             ++subtree_neighbors_accumulator[i];
             if (second_subtree_label > first_subtree_label) {
