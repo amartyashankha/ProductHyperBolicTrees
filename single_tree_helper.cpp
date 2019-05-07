@@ -1,4 +1,4 @@
-#include "product_trees_helper.h"
+#include "single_tree_helper.h"
 
 #define ROOT_SUBTREE_LABEL 1
 
