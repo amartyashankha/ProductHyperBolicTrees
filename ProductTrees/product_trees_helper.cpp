@@ -70,7 +70,7 @@ tuple<vector<LABEL>, UNORDERED_MAP> get_subtree_labels(
     subtree_labels.reserve(subtree_single_labels.size() * subtree_single_labels.size());
     for (auto subtree_first_label : subtree_single_labels)
         for (auto subtree_second_label : subtree_single_labels) {
-            subtree_label = make_pair(subtree_first_label, subtree_first_label);
+            subtree_label = make_pair(subtree_first_label, subtree_second_label);
             subtree_labels.push_back(subtree_label);
             map_subtree_label_to_index[subtree_label] = subtree_labels.size() - 1;
         }
@@ -134,58 +134,107 @@ tuple< LABEL *, unsigned int * > create_subtree_partitions(
     return make_tuple(subtree_label_to_label_index_list, subtree_member_list_indices);
 }
 
-void add_descendant_subtree_labels_to_vector(
-        LABEL source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
-        int remaining_distance, vector<LABEL> &subtree_labels_vector) {
-    LABEL current_depth = floor(log2(source_subtree_label));
-    LABEL partial_label_max = 1;
-    LABEL current_base_label = source_subtree_label;
+//void add_descendant_subtree_labels_to_vector(
+        //LABEL source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        //int remaining_distance, vector<LABEL> &subtree_labels_vector) {
+    //LABEL current_depth = floor(log2(source_subtree_label));
+    //LABEL partial_label_max = 1;
+    //LABEL current_base_label = source_subtree_label;
 
-    while (current_depth < tree_depth && remaining_distance >= 0) {
-        for (LONG_UINT partial_label = 0; partial_label < partial_label_max; ++partial_label) {
-            LONG_UINT descendant_subtree_label = current_base_label + partial_label;
-            subtree_labels_vector.push_back(descendant_subtree_label);
-        }
-        current_base_label = current_base_label << subtree_depth;
-        current_depth += subtree_depth;
-        partial_label_max = partial_label_max << subtree_depth;
+    //while (current_depth < tree_depth && remaining_distance >= 0) {
+        //for (LONG_UINT partial_label = 0; partial_label < partial_label_max; ++partial_label) {
+            //LONG_UINT descendant_subtree_label = current_base_label + partial_label;
+            //subtree_labels_vector.push_back(descendant_subtree_label);
+        //}
+        //current_base_label = current_base_label << subtree_depth;
+        //current_depth += subtree_depth;
+        //partial_label_max = partial_label_max << subtree_depth;
+        //remaining_distance -= subtree_depth;
+    //}
+//}
+
+//void get_nearby_subtrees(
+        //LABEL source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        //int remaining_distance, vector<LABEL> &visited_subtree_labels) {
+    //LABEL current_root_subtree_label = source_subtree_label;
+    //LABEL old_root_subtree_label;
+    //LABEL neighboring_subtree_label;
+    //unsigned int subtree_valence = 1 << subtree_depth;
+    //unsigned int current_remaining_distance = remaining_distance;
+
+    //add_descendant_subtree_labels_to_vector(source_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+
+    //while (current_remaining_distance >= subtree_depth) {
+        //if (current_root_subtree_label != ROOT_SUBTREE_LABEL) {
+            //old_root_subtree_label = current_root_subtree_label;
+            //current_root_subtree_label = current_root_subtree_label >> subtree_depth;
+            //visited_subtree_labels.push_back(current_root_subtree_label);
+            //for (unsigned int partial_label = 0; partial_label < subtree_valence; ++partial_label) {
+                //neighboring_subtree_label = (current_root_subtree_label << subtree_depth) + partial_label;
+                //unsigned int recursive_remaining_distance = remaining_distance - label_distance(source_subtree_label, neighboring_subtree_label);
+                //if (neighboring_subtree_label != old_root_subtree_label)
+                    //add_descendant_subtree_labels_to_vector(
+                            //neighboring_subtree_label, tree_depth, subtree_depth, recursive_remaining_distance, visited_subtree_labels);
+            //}
+            //current_remaining_distance -= subtree_depth;
+        //}
+        //else
+            //break;
+    //}
+    ////cout << source_subtree_label << "\t";
+    ////for (auto neighboring_subtree_label : visited_subtree_labels)
+        ////cout << " " << neighboring_subtree_label;
+    ////cout << endl;
+
+//}
+
+void get_nearby_subtrees_BFS(
+        LABEL source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
+        int remaining_distance, UNORDERED_SET &visited_subtree_labels) {
+    LABEL subtree_label_depth = floor(log2(source_subtree_label));
+    //unsigned int recursive_remaining_distance;
+
+    if (visited_subtree_labels.find(source_subtree_label) != visited_subtree_labels.end())
+        return;
+
+    visited_subtree_labels.insert(source_subtree_label);
+    if (remaining_distance < subtree_depth)
+        return;
+    else {
+        /* TODO: This is not quite correct? <16-04-19, shankha> */
         remaining_distance -= subtree_depth;
-    }
-}
-
-void get_nearby_subtrees(
-        LABEL source_subtree_label, unsigned int tree_depth, unsigned int subtree_depth,
-        int remaining_distance, vector<LABEL> &visited_subtree_labels) {
-    LABEL current_root_subtree_label = source_subtree_label;
-    LABEL old_root_subtree_label;
-    LABEL neighboring_subtree_label;
-    unsigned int subtree_valence = 1 << subtree_depth;
-    unsigned int current_remaining_distance = remaining_distance;
-
-    add_descendant_subtree_labels_to_vector(source_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
-
-    while (current_remaining_distance >= subtree_depth) {
-        if (current_root_subtree_label != ROOT_SUBTREE_LABEL) {
-            old_root_subtree_label = current_root_subtree_label;
-            current_root_subtree_label = current_root_subtree_label >> subtree_depth;
-            visited_subtree_labels.push_back(current_root_subtree_label);
-            for (unsigned int partial_label = 0; partial_label < subtree_valence; ++partial_label) {
-                neighboring_subtree_label = (current_root_subtree_label << subtree_depth) + partial_label;
-                unsigned int recursive_remaining_distance = remaining_distance - label_distance(source_subtree_label, neighboring_subtree_label);
-                if (neighboring_subtree_label != old_root_subtree_label)
-                    add_descendant_subtree_labels_to_vector(
-                            neighboring_subtree_label, tree_depth, subtree_depth, recursive_remaining_distance, visited_subtree_labels);
+        if (subtree_label_depth.first + subtree_depth <= tree_depth - subtree_depth) {
+            LABEL child_subtree_label_base = source_subtree_label;
+            child_subtree_label_base.first = child_subtree_label_base.first << subtree_depth;
+            LONG_UINT max_label_extension = 1 << subtree_depth;
+            for (LONG_UINT label_extension = 0; label_extension < max_label_extension; ++label_extension) {
+                LABEL child_subtree_label = child_subtree_label_base;
+                child_subtree_label.first = child_subtree_label_base.first + label_extension;
+                get_nearby_subtrees_BFS(child_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
             }
-            current_remaining_distance -= subtree_depth;
         }
-        else
-            break;
-    }
-    //cout << source_subtree_label << "\t";
-    //for (auto neighboring_subtree_label : visited_subtree_labels)
-        //cout << " " << neighboring_subtree_label;
-    //cout << endl;
+        if (subtree_label_depth.second + subtree_depth <= tree_depth - subtree_depth) {
+            LABEL child_subtree_label_base = source_subtree_label;
+            child_subtree_label_base.second = child_subtree_label_base.second << subtree_depth;
+            LONG_UINT max_label_extension = 1 << subtree_depth;
+            for (LONG_UINT label_extension = 0; label_extension < max_label_extension; ++label_extension) {
+                LABEL child_subtree_label = child_subtree_label_base;
+                child_subtree_label.second = child_subtree_label_base.second + label_extension;
+                get_nearby_subtrees_BFS(child_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+            }
+        }
 
+        if (subtree_label_depth.first >= subtree_depth) {
+            LABEL parent_subtree_label = source_subtree_label;
+            parent_subtree_label.first = parent_subtree_label.first >> subtree_depth;
+            get_nearby_subtrees_BFS(parent_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+        }
+        if (subtree_label_depth.second >= subtree_depth) {
+            LABEL parent_subtree_label = source_subtree_label;
+            parent_subtree_label.second = parent_subtree_label.second >> subtree_depth;
+            get_nearby_subtrees_BFS(parent_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+        }
+    }
 }
 
 
@@ -197,7 +246,8 @@ vector< pair<LABEL, LABEL> > get_all_edges(
     LONG_UINT num_subtrees = subtree_labels.size();
     LABEL *first_subtree_member_labels, *second_subtree_member_labels;
     unsigned int num_first_subtree_member_labels, num_second_subtree_member_labels;
-    vector<LABEL> visited_subtree_labels;
+    //vector<LABEL> visited_subtree_labels;
+    UNORDERED_SET visited_subtree_labels;
     vector<unsigned int> subtree_neighbors_accumulator;
 
     edges.reserve(100 * num_labels);
@@ -211,32 +261,32 @@ vector< pair<LABEL, LABEL> > get_all_edges(
 
         visited_subtree_labels.clear();
         int remaining_distance = threshold + 0 * subtree_depth;
-        get_nearby_subtrees(first_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
-        for (LONG_UINT second_subtree_label : visited_subtree_labels) {
+        get_nearby_subtrees_BFS(first_subtree_label, tree_depth, subtree_depth, remaining_distance, visited_subtree_labels);
+        for (LABEL second_subtree_label : visited_subtree_labels) {
             ++subtree_neighbors_accumulator[i];
             if (second_subtree_label > first_subtree_label) {
-                unsigned int second_subtree_index;// = map_subtree_label_to_index[second_subtree_label];
+                unsigned int second_subtree_index = map_subtree_label_to_index[second_subtree_label];
                 second_subtree_member_labels = &subtree_label_to_label_index_list[subtree_member_list_indices[second_subtree_index]];
                 num_second_subtree_member_labels = subtree_member_list_indices[second_subtree_index + 1];
                 num_second_subtree_member_labels -= subtree_member_list_indices[second_subtree_index];
 
                 for (unsigned int k = 0; k < num_first_subtree_member_labels; ++k) {
-                    LONG_UINT first_endpoint_label = first_subtree_member_labels[k];
+                    LABEL first_endpoint_label = first_subtree_member_labels[k];
                     for (unsigned int l = 0; l < num_second_subtree_member_labels; ++l) {
-                        LONG_UINT second_endpoint_label = second_subtree_member_labels[l];
+                        LABEL second_endpoint_label = second_subtree_member_labels[l];
                         if (label_distance(first_endpoint_label, second_endpoint_label) <= threshold)
-                            edges.push_back(pair<LONG_UINT, LONG_UINT>(first_endpoint_label, second_endpoint_label));
+                            edges.push_back(make_pair(first_endpoint_label, second_endpoint_label));
                     }
                 }
             }
         }
 
         for (unsigned int k = 0; k < num_first_subtree_member_labels; ++k) {
-            LONG_UINT first_endpoint_label = first_subtree_member_labels[k];
+            LABEL first_endpoint_label = first_subtree_member_labels[k];
             for (unsigned int l = k + 1; l < num_first_subtree_member_labels; ++l) {
-                LONG_UINT second_endpoint_label = first_subtree_member_labels[l];
+                LABEL second_endpoint_label = first_subtree_member_labels[l];
                 if (label_distance(first_endpoint_label, second_endpoint_label) <= threshold)
-                    edges.push_back(pair<LONG_UINT, LONG_UINT>(first_endpoint_label, second_endpoint_label));
+                    edges.push_back(make_pair(first_endpoint_label, second_endpoint_label));
             }
         }
     }

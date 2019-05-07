@@ -5,11 +5,10 @@
 #include<vector>
 #include<numeric>
 #include<unordered_map>
+#include<unordered_set>
 
 #include<cassert>
 #include<cmath>
-
-#include "absl/container/flat_hash_map.h"
 
 using namespace std;
 
@@ -28,6 +27,7 @@ struct pair_hash {
 typedef unsigned int LONG_UINT;
 typedef pair<LONG_UINT, LONG_UINT> LABEL;
 typedef unordered_map<LABEL, unsigned int, pair_hash> UNORDERED_MAP;
+typedef unordered_set<LABEL, pair_hash> UNORDERED_SET;
 
 tuple<vector<LABEL>, UNORDERED_MAP> get_subtree_labels(
         LABEL *labels, LONG_UINT num_labels, unsigned int tree_depth, unsigned int subtree_depth);

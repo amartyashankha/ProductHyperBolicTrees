@@ -15,7 +15,7 @@ using namespace std;
 using namespace std::chrono;
 
 void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned int log_num_labels) {
-    unsigned int num_trees = 1;
+    unsigned int num_trees = 2;
 
     LONG_UINT tree_size = 1 << tree_depth;
     LONG_UINT num_labels = 1 << log_num_labels;
@@ -55,18 +55,19 @@ void run_benchmark(unsigned int tree_depth, unsigned int subtree_depth, unsigned
             subtree_labels, map_subtree_label_to_index,
             subtree_label_to_label_index_list, subtree_member_list_indices);
 
-    //auto stop = high_resolution_clock::now();
-    //int64_t elapsed_time = duration_cast<nanoseconds>(stop - start).count();
-    //printf("Elapsed Time: %lf miliseconds\n", elapsed_time / 1e6);
-    //printf("Found %ld edges amongst %d vertices.\n", edges.size(), num_labels);
-    //printf("%lf nanoseconds per edge\n", 1.0 * elapsed_time / edges.size());
+    auto stop = high_resolution_clock::now();
+    int64_t elapsed_time = duration_cast<nanoseconds>(stop - start).count();
+    printf("Elapsed Time: %lf miliseconds\n", elapsed_time / 1e6);
+    printf("Found %ld edges amongst %d vertices.\n", edges.size(), num_labels);
+    printf("Average degree: %lf\n", 2.0 * edges.size() / num_labels);
+    printf("%lf nanoseconds per edge\n", 1.0 * elapsed_time / edges.size());
 
-    //free(subtree_label_to_label_index_list);
-    //free(subtree_member_list_indices);
+    free(subtree_label_to_label_index_list);
+    free(subtree_member_list_indices);
 
-    //for (pair<LONG_UINT, LONG_UINT> edge: edges) {
-        //printf("%lld\t%lld\n", edge.first, edge.second);
-    //}
+    for (pair<LABEL, LABEL> edge: edges) {
+        //printf("(%d, %d)\t(%d, %d)\n", edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+    }
 
 }
 
